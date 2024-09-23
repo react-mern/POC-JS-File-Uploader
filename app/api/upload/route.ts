@@ -6,12 +6,6 @@ import s3Client from '@/utils/S3Client';
 
 const UPLOAD_DIR = 'public/uploads';
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
 export const POST = async (request: NextRequest) => {
   try {
     const formData = await request.formData();
@@ -53,10 +47,7 @@ export const POST = async (request: NextRequest) => {
 
     await upload.done();
 
-    return NextResponse.json(
-      { message: 'Upload completed' },
-      { status: 200 }
-    );
+    return NextResponse.json({ message: 'Upload completed' }, { status: 200 });
   } catch (error) {
     return NextResponse.json(
       { message: 'Internal server error' },
