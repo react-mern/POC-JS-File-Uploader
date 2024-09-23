@@ -4,7 +4,6 @@ import path from 'path';
 import { Upload } from '@aws-sdk/lib-storage';
 import s3Client from '@/utils/S3Client';
 
-const UPLOAD_DIR = 'public/uploads';
 
 export const POST = async (request: NextRequest) => {
   try {
@@ -21,13 +20,7 @@ export const POST = async (request: NextRequest) => {
     const Key = `${crypto.randomUUID()}-${file.name}`;
     const fileBuffer = Buffer.from(await file.arrayBuffer());
 
-    // Ensure upload directory exists
-    if (!fs.existsSync(UPLOAD_DIR)) {
-      fs.mkdirSync(UPLOAD_DIR, { recursive: true });
-    }
 
-    // Save file locally
-    fs.writeFileSync(path.resolve(UPLOAD_DIR, file.name), fileBuffer);
 
     // Upload to S3
     const upload = new Upload({
@@ -50,7 +43,7 @@ export const POST = async (request: NextRequest) => {
     return NextResponse.json({ message: 'Upload completed' }, { status: 200 });
   } catch (error) {
     return NextResponse.json(
-      { message: 'Internal server error' },
+      { message: `Internal server error ${error.message}` },
       { status: 500 }
     );
   }
