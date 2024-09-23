@@ -2,6 +2,8 @@ import s3Client from '@/utils/S3Client';
 import { ListObjectsV2Command } from '@aws-sdk/client-s3';
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 export const GET = async () => {
   try {
     const client = s3Client;

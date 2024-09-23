@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
 import { Upload } from '@aws-sdk/lib-storage';
 import s3Client from '@/utils/S3Client';
 
