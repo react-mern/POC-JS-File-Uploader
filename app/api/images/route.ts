@@ -4,6 +4,8 @@ import { NextResponse } from 'next/server';
 
 export const GET = async () => {
   try {
+    console.log("INSIDE ROUTE");
+    
     const client = s3Client;
     const command = new ListObjectsV2Command({
       Bucket: process.env.AWS_BUCKET,
@@ -32,8 +34,14 @@ export const GET = async () => {
         `https://${process.env.AWS_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${image.Key}`
     );
 
+    console.log(imageUrls);
+    
+
     return NextResponse.json({ imageUrls }, { status: 200 });
   } catch (error) {
+
+    console.log(error);
+    
     return NextResponse.json(
       { message: (error as { message: string }).message },
       { status: 400 }
