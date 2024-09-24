@@ -7,6 +7,7 @@ import { Separator } from '../ui/separator';
 import { MdRefresh } from 'react-icons/md';
 import ConfirmDialog from '../confirmation-dialog/ConfirmDialog';
 import FileDetails from './FIledetails';
+import { useToast } from '@/hooks/use-toast';
 
 interface FileMetadata extends File {
   preview: string;
@@ -24,6 +25,7 @@ const FileUploader = () => {
   const [files, setFiles] = useState<UploadFile[]>([]);
   const [error, setError] = useState('');
   const UNIQUE_ID = uuidv4();
+  const { toast } = useToast();
 
   const uploadHandler = useCallback(
     (type: UploadStatus, currentFile: UploadFile, progress: number) => {
@@ -60,7 +62,10 @@ const FileUploader = () => {
     (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
       if (rejectedFiles.length > 0) {
         setError(rejectedFiles[0].errors[0].message);
-        alert(rejectedFiles[0].errors[0].message);
+        toast({
+          title: rejectedFiles[0].errors[0].message,
+          variant: 'destructive',
+        });
         return;
       }
 
@@ -111,8 +116,10 @@ const FileUploader = () => {
           />
         </div>
         {files.length === 0 ? (
-          <div className="flex flex-col justify-center items-center h-[200px] border border-dashed border-gray-300 rounded-lg
-          ">
+          <div
+            className="flex flex-col justify-center items-center h-[200px] border border-dashed border-gray-300 rounded-lg
+          "
+          >
             <p>No files in recent uploads.</p>
             <p>Your latest uploads will appear here.</p>
           </div>

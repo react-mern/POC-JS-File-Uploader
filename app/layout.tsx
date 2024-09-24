@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import UploadManagerInitializer from '@/components/file-uploader/UploadManagerInitializer';
 import Navbar from '@/components/navbar/Navbar';
+import { Toaster } from '@/components/ui/toaster';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -22,6 +23,7 @@ export default function RootLayout({
         <Navbar />
         <UploadManagerInitializer />
         {children}
+        <Toaster />
       </body>
     </html>
   );

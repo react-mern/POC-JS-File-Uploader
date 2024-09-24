@@ -1,39 +1,60 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { MdCancel } from 'react-icons/md';
 import { IoCheckmarkDoneCircle } from 'react-icons/io5';
+import { FiLoader } from "react-icons/fi";
 import PreviewImage from '../preview-image/PreviewImage';
 import { revalidateImages } from '@/utils/action';
+import ConfirmDialog from '../confirmation-dialog/ConfirmDialog';
+import { useToast } from '@/hooks/use-toast';
+import Loader from '../loader/Loader';
 
 const FileDetails = ({ data, uploadHandler }) => {
   const [progress, setProgress] = useState(data.progress);
   const [isUploaded, setIsUploaded] = useState(false);
   const [isCanceled, setIsCanceled] = useState(false);
 
+  const { toast } = useToast();
+
   // Memoize the upload listener to prevent unnecessary re-creations
-  const uploadListener = useCallback(async (type, args) => {
-    switch (type) {
-      case 'ABORTED':
-        setIsCanceled(true);
-        alert('Upload cancelled');
-        break;
-      case 'ERROR':
-        uploadHandler('FAIL', data, args.progress);
-        alert('Something went wrong!');
-        break;
-      case 'DONE':
-        uploadHandler('SUCCESS', data, args.progress);
-        await revalidateImages();
-        setIsUploaded(true);
-        break;
-      case 'PROGRESS':
-        setProgress(args.progress);
-        break;
-    }
-  }, [data, uploadHandler]);
+  const uploadListener = useCallback(
+    async (type, args) => {
+      switch (type) {
+        case 'ABORTED':
+          setIsCanceled(true);
+          toast({
+            title: 'Upload cancelled!',
+            variant: 'destructive',
+          });
+          break;
+        case 'ERROR':
+          uploadHandler('FAIL', data, args.progress);
+          toast({
+            title: 'Upload failed!',
+            variant: 'destructive',
+          });
+          break;
+        case 'DONE':
+          uploadHandler('SUCCESS', data, args.progress);
+          await revalidateImages();
+          setIsUploaded(true);
+
+          toast({
+            title: 'Upload completed!',
+            variant: 'default',
+          });
+          
+          break;
+        case 'PROGRESS':
+          setProgress(args.progress);
+          break;
+      }
+    },
+    [data, uploadHandler]
+  );
 
   useEffect(() => {
     const uploadListenerId = `upload:${data.id}`;
-    
+
     // Add event listener for upload progress
     if (window.UploadManager) {
       window.UploadManager.EE.on(uploadListenerId, uploadListener);
@@ -48,9 +69,7 @@ const FileDetails = ({ data, uploadHandler }) => {
   }, [data.id, uploadListener]);
 
   const onCancel = () => {
-    if (window.confirm('Are you sure you want cancel this upload?')) {
-      window.UploadManager.cancel(data.id, true);
-    }
+    window.UploadManager.cancel(data.id, true);
   };
 
   return (
@@ -64,8 +83,13 @@ const FileDetails = ({ data, uploadHandler }) => {
         />
       </div>
       {progress < 100 && !isCanceled && (
-        <MdCancel onClick={onCancel} className="abort-button" />
+        <ConfirmDialog
+          onClick={onCancel}
+          description="Are you sure you want cancel this upload?"
+          trigger={<MdCancel  className="abort-button" />}
+        />
       )}
+      {progress===100&& !isUploaded && <FiLoader className='uploading' />}
       {isUploaded && <IoCheckmarkDoneCircle className="mark-done" />}
     </div>
   );
