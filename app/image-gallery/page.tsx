@@ -1,5 +1,4 @@
 import ImageCard from '@/components/image-card/ImageCard';
-import React from 'react';
 
 const ImageGallery = async () => {
   const fetchImages = async () => {
