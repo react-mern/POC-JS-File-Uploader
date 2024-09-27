@@ -6,7 +6,6 @@ import PreviewImage from '../preview-image/PreviewImage';
 import { revalidateImages } from '@/utils/action';
 import ConfirmDialog from '../confirmation-dialog/ConfirmDialog';
 import { useToast } from '@/hooks/use-toast';
-import Loader from '../loader/Loader';
 
 const FileDetails = ({ data, uploadHandler }) => {
   const [progress, setProgress] = useState(data.progress);
